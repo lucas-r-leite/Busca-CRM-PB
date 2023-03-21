@@ -14,8 +14,17 @@ headers = {
         'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36"}
 
 #Abrindo do Navegador e entrando no site
-driver = webdriver.Firefox()
-#driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()))
+first_acess = input("Esta é a primera vez que você roda o código nesta máquina?[s/n] ")
+while first_acess !="s" or first_acess!="n":
+    if first_acess == "s":
+        river = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()))
+        break
+    elif first_acess=="n":
+        driver = webdriver.Firefox()
+        break
+    else:
+        print("Responda s ou n!")
+        first_acess = input("Esta é a primera vez que você roda o código nesta máquina?[s/n]")
 
 #driver = webdriver.Chrome() #Se você instalou o executável
 
