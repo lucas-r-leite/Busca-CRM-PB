@@ -1,2 +1,2 @@
-medicos.csv
-geckodriver.log
+*.csv
+*.log
