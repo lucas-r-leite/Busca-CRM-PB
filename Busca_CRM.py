@@ -89,53 +89,58 @@ time.sleep(2)
 
 
 #Atualizando o html 
-html = driver.page_source
-soup = BeautifulSoup(html, 'html.parser')
-medicos = soup.find_all('div',class_='card-body')
-
+#html = driver.page_source
+#soup = BeautifulSoup(html, 'html.parser')
 # Criando a tabela .csv
 df = pd.DataFrame(columns=["Nome do médico", "CRM", "Especialidade" ,"Situação", "Inscrição outro estado","Endereço", "Telefone"])
+#final_pag = input(int("Até qual página deseja realizar a pesquisa?"))
+for i in range(1,6):
+    enviar_btn = driver.find_element(By.CSS_SELECTOR,f'[data-num="{i}"]')
+    enviar_btn.click()
+    time.sleep(3)
+    html = driver.page_source
+    soup = BeautifulSoup(html, 'html.parser')
+    medicos = soup.find_all('div',class_='card-body')
+    for medico in medicos[:10]:
+        nome = medico.find('h4').get_text()
 
-for medico in medicos[:10]:
-    nome = medico.find('h4').get_text()
+        #CRM
+        crm = medico.find('div',class_='row').get_text()
+        index_line = crm.find("-")
+        index_crm = crm.find("CRM:")
+        crm = crm[index_crm+4:index_line+3]
 
-    #CRM
-    crm = medico.find('div',class_='row').get_text()
-    index_line = crm.find("-")
-    index_crm = crm.find("CRM:")
-    crm = crm[index_crm+4:index_line+3]
+        #Situação
+        situacao = medico.find('div',class_='col-md').get_text()
+        index_situacao = situacao.find("Situação:")
+        situacao = situacao[index_situacao+10:]
 
-    #Situação
-    situacao = medico.find('div',class_='col-md').get_text()
-    index_situacao = situacao.find("Situação:")
-    situacao = situacao[index_situacao+10:]
+        #Especialidade
+        especialidade = medico.find('div',style='display: flex;').get_text()
+        especialidade = especialidade.replace("Especialidades/Áreas de Atuação:","")
 
-    #Especialidade
-    especialidade = medico.find('div',style='display: flex;').get_text()
-    especialidade = especialidade.replace("Especialidades/Áreas de Atuação:","")
+        #Inscrição outro estado:
+        inscricao = medico.find('div',class_='col-md-12').get_text()
+        inscricao = inscricao.replace("Inscrições em outro estado: ","")
 
-    #Inscrição outro estado:
-    inscricao = medico.find('div',class_='col-md-12').get_text()
-    inscricao = inscricao.replace("Inscrições em outro estado: ","")
+        #Endereço
+        endereco = medico.find('div',class_='row endereco').get_text()
+        endereco = endereco.replace("Endereço: ","")
 
-    #Endereço
-    endereco = medico.find('div',class_='row endereco').get_text()
-    endereco = endereco.replace("Endereço: ","")
+        #Telefone
+        telefone = medico.find('div',class_='row telefone').get_text()
+        telefone = telefone.replace("Telefone(s): ","")
+        telefone = telefone.replace("Telefone: ","")
 
-    #Telefone
-    telefone = medico.find('div',class_='row telefone').get_text()
-    telefone = telefone.replace("Telefone(s): ","")
-    telefone = telefone.replace("Telefone: ","")
-
-    df = df.append({"Nome do médico": nome, "CRM":crm, "Especialidade":especialidade ,"Situação":situacao, "Inscrição outro estado":inscricao,"Endereço": endereco, "Telefone": telefone}, ignore_index=True)
+        df = df.append({"Nome do médico": nome, "CRM":crm, "Especialidade":especialidade ,"Situação":situacao, "Inscrição outro estado":inscricao,"Endereço": endereco, "Telefone": telefone}, ignore_index=True)
 
 df.to_csv("medicos.csv", index=False, encoding='UTF-8')
 
-#Clicando no botão para acessar a segunda página
-for i in range(2,4):
-    enviar_btn = driver.find_element(By.CSS_SELECTOR,f'[data-num="{i}"]')
-    enviar_btn.click()
-    time.sleep(5)
+#Clicando no botão para acessar as páginas
+#for i in range(1,4):
+    #enviar_btn = driver.find_element(By.CSS_SELECTOR,f'[data-num="{i}"]')
+    #enviar_btn.click()
+    #time.sleep(5)
 
 #Fechando navegador e encerrando o Selenium
 driver.close()
