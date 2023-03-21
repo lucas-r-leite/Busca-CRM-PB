@@ -1,8 +1,6 @@
 import pandas as pd
 import csv, requests, time
 from selenium import webdriver
-from selenium.webdriver.firefox.service import Service as FirefoxService
-from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
@@ -15,16 +13,52 @@ headers = {
 
 #Abrindo do Navegador e entrando no site
 first_acess = input("Esta é a primera vez que você roda o código nesta máquina?[s/n] ")
+first_acess = first_acess.lower() #Tornando todas as letras minúsculas
+browser = input("Qual o seu navegador?[Chrome/Firefox]? ")
+browser = browser.lower() #Tornando todas as letras minúsculas
+
 while first_acess !="s" or first_acess!="n":
     if first_acess == "s":
-        river = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()))
-        break
+        if browser=="firefox":
+            from selenium.webdriver.firefox.service import Service as FirefoxService
+            from webdriver_manager.firefox import GeckoDriverManager
+            driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()))
+            break
+        elif browser=="chrome":
+            from selenium.webdriver.chrome.service import Service as ChromeService
+            from webdriver_manager.chrome import ChromeDriverManager
+            driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+            break
+        else:
+            print("Entrada não reconhecida, irei rodar o Google Chrome")
+            from selenium.webdriver.chrome.service import Service as ChromeService
+            from webdriver_manager.chrome import ChromeDriverManager
+            driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+            #driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()))
+            break
     elif first_acess=="n":
-        driver = webdriver.Firefox()
-        break
+        if browser=="firefox":
+            from selenium.webdriver.firefox.service import Service as FirefoxService
+            from webdriver_manager.firefox import GeckoDriverManager
+            driver = webdriver.Firefox()
+            break
+        elif browser=="chrome":
+            from selenium.webdriver.chrome.service import Service as ChromeService
+            from webdriver_manager.chrome import ChromeDriverManager
+            driver = webdriver.Chrome()
+            break
+        else:
+            print("Entrada não reconhecida, irei rodar o Firefox")
+            from selenium.webdriver.chrome.service import Service as ChromeService
+            from webdriver_manager.chrome import ChromeDriverManager
+            driver = webdriver.Chrome()
+            break
     else:
         print("Responda s ou n!")
         first_acess = input("Esta é a primera vez que você roda o código nesta máquina?[s/n] ")
+        first_acess = first_acess.lower()
+        browser = input("Qual o seu navegador?[chrome/firefox]? ")
+        browser = browser.lower()
 
 driver.get("https://crmpb.org.br/busca-medicos/")
 
@@ -101,7 +135,7 @@ df.to_csv("medicos.csv", index=False, encoding='UTF-8')
 for i in range(2,4):
     enviar_btn = driver.find_element(By.CSS_SELECTOR,f'[data-num="{i}"]')
     enviar_btn.click()
-    time.sleep(10)
+    time.sleep(5)
 
 #Fechando navegador e encerrando o Selenium
 driver.close()
