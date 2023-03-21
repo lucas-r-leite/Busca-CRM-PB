@@ -24,14 +24,7 @@ while first_acess !="s" or first_acess!="n":
         break
     else:
         print("Responda s ou n!")
-        first_acess = input("Esta é a primera vez que você roda o código nesta máquina?[s/n]")
-
-#driver = webdriver.Chrome() #Se você instalou o executável
-
-#Caso não tenha instalado o ChromeDrive, apenas realizado o Download
-#chromedriver_path = 'coloque o caminho do executável aqui'
-#driver = webdriver.Chrome(executable_path=chomedriver)
-
+        first_acess = input("Esta é a primera vez que você roda o código nesta máquina?[s/n] ")
 
 driver.get("https://crmpb.org.br/busca-medicos/")
 
@@ -103,6 +96,12 @@ for medico in medicos[:10]:
     df = df.append({"Nome do médico": nome, "CRM":crm, "Especialidade":especialidade ,"Situação":situacao, "Inscrição outro estado":inscricao,"Endereço": endereco, "Telefone": telefone}, ignore_index=True)
 
 df.to_csv("medicos.csv", index=False, encoding='UTF-8')
+
+#Clicando no botão para acessar a segunda página
+for i in range(2,4):
+    enviar_btn = driver.find_element(By.CSS_SELECTOR,f'[data-num="{i}"]')
+    enviar_btn.click()
+    time.sleep(10)
 
 #Fechando navegador e encerrando o Selenium
 driver.close()
