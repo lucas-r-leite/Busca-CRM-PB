@@ -91,18 +91,25 @@ wait.until(EC.presence_of_all_elements_located((By.XPATH, '//*[@id="content"]/se
 time.sleep(2)
 
 
-#Atualizando o html 
-#html = driver.page_source
-#soup = BeautifulSoup(html, 'html.parser')
-# Criando a tabela .csv
+#Atualizando o html e pegando o valor da última página 
+html = driver.page_source
+soup = BeautifulSoup(html, 'html.parser')
+final_page = soup.find('li',class_='paginationjs-page paginationjs-last J-paginationjs-page').get_text()
+
 df = pd.DataFrame(columns=["Nome do médico", "CRM", "Especialidade" ,"Situação", "Inscrição outro estado","Endereço", "Telefone"])
-#final_pag = input(int("Até qual página deseja realizar a pesquisa?"))
-for i in range(1,6):
+
+for i in range(1,int(final_page)):
     enviar_btn = driver.find_element(By.CSS_SELECTOR,f'[data-num="{i}"]')
     enviar_btn.click()
-    time.sleep(3)
+    
+    #Esperando a div resultados ser carregada
+    wait = WebDriverWait(driver, 60)
+    wait.until(EC.presence_of_all_elements_located((By.XPATH, '/html/body/div[1]/div[1]/section[2]/div/div/div/div[4]/div')))
+    time.sleep(2)
+
     html = driver.page_source
     soup = BeautifulSoup(html, 'html.parser')
+
     medicos = soup.find_all('div',class_='card-body')
     for medico in medicos[:10]:
         nome = medico.find('h4').get_text()
