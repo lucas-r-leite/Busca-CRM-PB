@@ -49,9 +49,12 @@ while first_acess !="s" or first_acess!="n":
             break
         else:
             print("Entrada não reconhecida, irei rodar o Firefox")
-            from selenium.webdriver.chrome.service import Service as ChromeService
-            from webdriver_manager.chrome import ChromeDriverManager
-            driver = webdriver.Chrome()
+            #from selenium.webdriver.chrome.service import Service as ChromeService
+            #from webdriver_manager.chrome import ChromeDriverManager
+            #driver = webdriver.Chrome()
+            from selenium.webdriver.firefox.service import Service as FirefoxService
+            from webdriver_manager.firefox import GeckoDriverManager
+            driver = webdriver.Firefox()
             break
     else:
         print("Responda s ou n!")
@@ -134,13 +137,10 @@ for i in range(1,6):
 
         df = df.append({"Nome do médico": nome, "CRM":crm, "Especialidade":especialidade ,"Situação":situacao, "Inscrição outro estado":inscricao,"Endereço": endereco, "Telefone": telefone}, ignore_index=True)
 
-df.to_csv("medicos.csv", index=False, encoding='UTF-8')
+#Filtrar dados
+df.query('Situação == "Regular " & Telefone != "Exibição não autorizada pelo médico."', inplace = True)
 
-#Clicando no botão para acessar as páginas
-#for i in range(1,4):
-    #enviar_btn = driver.find_element(By.CSS_SELECTOR,f'[data-num="{i}"]')
-    #enviar_btn.click()
-    #time.sleep(5)
+df.to_csv("medicos.csv", index=False, encoding='UTF-8')
 
 #Fechando navegador e encerrando o Selenium
 driver.close()
